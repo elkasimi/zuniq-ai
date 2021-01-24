@@ -104,9 +104,11 @@ For opening (turn < 21) I compiled a list of good walls for each player with som
 of reducing the branching factor at by sqrt(2).
 
 Those are the good opening moves for white:
+
 ![image missing](./good-white-opening-walls.png)
 
 and those are the good opening moves found for black:
+
 ![image missing](./good-black-opening-walls.png)
 
 for tricking opponents the selection phase is done with epsilon-greedy approach for opponent so 10% of the time opponent moves are chosen at random so my player is playing moves that propose more pitfalls for opponent.
