@@ -59,6 +59,8 @@ struct Position {
 
   int getImpact(const Move& move) const;
 
+  State getStateAfterPlaying(const Move& move) const;
+
   mutable int walls[60];
   Bitmask placed;
   Bitmask state;

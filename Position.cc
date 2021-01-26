@@ -131,3 +131,13 @@ bool Position::getRandomMove(RNG &gen, Move &move) const {
 int Position::getImpact(const Move &move) const {
   return __builtin_popcountll(possibleWalls & move.zone.walls);
 }
+
+State Position::getStateAfterPlaying(const Move &move) const {
+  auto result = state;
+  add(result, move.wall);
+  if (move.zone) {
+    result &= ~move.zone.walls;
+    result |= move.zone.border;
+  }
+  return result;
+}

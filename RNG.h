@@ -10,6 +10,11 @@ struct RNG {
 
   inline int lessThan(int bound) { return fromRange(0, bound - 1); }
 
+  inline int withDiscreteDistribution(const vector<double> &weights) {
+    discrete_distribution<int> discrete_dist(weights.begin(), weights.end());
+    return discrete_dist(engine);
+  }
+
   random_device r;
   default_random_engine engine;
 };

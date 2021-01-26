@@ -10,11 +10,15 @@ struct Example {
   float value;
 };
 
+
+// TODO review code
+// TODO add solver support
 struct ActionInfo {
   ActionInfo() : status(INVALID) {}
 
   Stats q;
-  unsigned int status : 2;
+  unsigned int status;
+  float p;
 
   operator bool() const { return status != INVALID; }
   bool isWinning() const { return status == WIN; }
@@ -44,13 +48,10 @@ struct StateInfo {
   void markLosing() { status = LOSS; }
 
   float eval(int a) const {
-    // TODO
-    return 0.0f;
-  }
-
-  int selectRandom() const {
-    // TODO
-    return 0;
+    const auto &[q, status, p] = actionInfo[a];
+    if (status == WIN) return OO;
+    if (status == LOSS) return -OO;
+    return q.value + p * sqrtf(visits) / (1.0f + q.visits);
   }
 
   int select() const {
@@ -91,24 +92,32 @@ struct StateInfo {
   }
 };
 
-struct FANN;
+using Transition = tuple<State, int, int>;
+
+struct fann;
 struct NNAgent {
   NNAgent();
+  NNAgent(const NNAgent &other);
   NNAgent(const string &filename);
+  NNAgent &operator=(const NNAgent &other);
+
+  ~NNAgent();
 
   void simulate(const Position &pos);
   float simulateDefault(const Position &pos);
-  void simulateTree(Position &pos);
+  void simulateTree(Position &pos, vector<Transition> &transitions);
   float eval(const Position &pos, const Move &move);
   Move select(const Position &pos);
   Move selectMostVisited(const Position &pos);
-  void backup(float value);
+  void backup(const vector<Transition> &transitions, float value);
   StateInfo &newNode(const Position &pos);
   Move getBestMove(const Position &pos);
+  Move getBestMoveForSelfPlay(const Position &pos);
 
   void train(const string &filename);
   void selfPlay(list<Example> &examples);
   void save(const string &filename);
+  float estimate(State state);
 
   void clean(const Position &pos) {
     cerr << "ri=" << m.size() << " ";
@@ -128,7 +137,7 @@ struct NNAgent {
 
   bool contains(State s) { return m.find(s) != m.end(); }
 
-  FANN *ann;
+  fann *ann;
   robin_hood::unordered_map<State, StateInfo> m;
 
   static constexpr int maxIterations = 1000;
