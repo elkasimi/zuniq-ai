@@ -5,46 +5,6 @@
 #include "RNG.h"
 #include "robin_hood.h"
 
-struct Stats {
-  float value = 0.0f;
-  int visits = 0;
-
-  inline void update(float v, int c = 1) {
-    value = value * visits + v * c;
-    value /= visits + c;
-    visits += c;
-  }
-
-  operator bool() const { return visits > 0; }
-
-  inline void operator+=(const Stats &s) {
-    if (s.visits == 0) return;
-    update(s.value, s.visits);
-  }
-
-  inline void operator-=(const Stats &s) {
-    if (s.visits == 0) return;
-    update(-s.value, s.visits);
-  }
-};
-
-inline ostream &operator<<(ostream &out, const Stats &stats) {
-  out << "(" << stats.value << ", ";
-  if (stats.visits < 1000)
-    out << stats.visits;
-  else
-    out << (stats.visits / 1000.0f) << "k";
-  out << ")";
-  return out;
-}
-
-constexpr unsigned int INVALID = 0;
-constexpr unsigned int UNKNOWN = 1;
-constexpr unsigned int WIN = 2;
-constexpr unsigned int LOSS = 3;
-
-using State = Bitmask;
-using Action = int;
 struct ActionInfo {
   ActionInfo() : status(INVALID) {}
 
@@ -61,16 +21,12 @@ struct ActionInfo {
   void markLosing() { status = LOSS; }
 };
 
-constexpr float OO = 1000000.0f;
-inline bool isExactWin(float v) { return v > 10000.0f; };
-inline bool isExactLoss(float v) { return v < -10000.0f; };
-
 struct StateInfo {
   StateInfo() : status(UNKNOWN), actionsCount(0), visits(0) {}
 
-  // This can be optimised in term of memory usage by using pointers instead of objects as
-  // at least half of them are not used. but as CodeCup competition offered 256MB this year
-  // I did not force myself to optimise it
+  // This can be optimised in term of memory usage by using pointers instead of
+  // objects as at least half of them are not used. but as CodeCup competition
+  // offered 256MB this year I did not force myself to optimise it
   ActionInfo actionInfo[60];
   Bitmask invalid;
   unsigned int status : 2;
