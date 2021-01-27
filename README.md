@@ -76,6 +76,7 @@ So finally the selection algorithm is trying to select action a that maximize th
 value = (n1 * v1 + n2 * v2 + n3 * v3) / (n1 + n2 + n3) + impact * sqrt(visits) / n (1)
 
 where
+
   Qi = (vi, ni), i = 1, 2, 3
   
   n = n1 + n2 + n3
