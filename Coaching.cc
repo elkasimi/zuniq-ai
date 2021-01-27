@@ -1,6 +1,7 @@
 #include <floatfann.h>
-#include <thread>
+
 #include <future>
+#include <thread>
 
 #include "Common.h"
 #include "NNAgent.h"
@@ -79,7 +80,7 @@ struct Coaching {
       cout << "episode " << e << " ..";
       cout.flush();
       auto episodeExamples = results[e].get();
-      for (const auto& example : episodeExamples) {
+      for (const auto &example : episodeExamples) {
         examples.push_back(example);
       }
       cout << "done!" << endl;

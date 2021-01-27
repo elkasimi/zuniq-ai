@@ -106,7 +106,7 @@ float NNAgent::simulateDefault(const Position &pos) {
     return pos.turns & 1 ? 1.0f : -1.0f;
   }
 
-  return pos.turns & 1? -estimate(pos.state) : estimate(pos.state);
+  return pos.turns & 1 ? -estimate(pos.state) : estimate(pos.state);
 }
 
 Move NNAgent::select(const Position &pos) {
