@@ -3,7 +3,22 @@
 #include "Common.h"
 #include "NNAgent.h"
 
-// TODO add threading
+// TODO: use threading
+
+bool runGame(NNAgent x, NNAgent y) {
+  Position pos;
+  while (!pos.isEndGame()) {
+    Move move;
+    if (pos.turns & 1) {
+      move = curr.getBestMove(pos);
+    } else {
+      move = best.getBestMove(pos);
+    }
+    pos.doMove(move);
+  }
+  return (pos.turns & 1);
+}
+
 struct Coaching {
   Coaching() : curr(), best(curr) {}
   Coaching(const string &filename) : curr(filename), best(curr) {}
@@ -12,17 +27,8 @@ struct Coaching {
     int a = 0, b = 0;
     for (int i = 1; i <= 5; ++i) {
       cerr << "game " << i << " as black";
-      Position pos;
-      while (!pos.isEndGame()) {
-        Move move;
-        if (pos.turns & 1) {
-          move = curr.getBestMove(pos);
-        } else {
-          move = best.getBestMove(pos);
-        }
-        pos.doMove(move);
-      }
-      if (pos.turns & 1) {
+      bool whiteWins = runGame(best, curr);
+      if (whiteWins) {
         cerr << "=> best so far wins" << endl;
         ++b;
       } else {
@@ -33,17 +39,8 @@ struct Coaching {
 
     for (int i = 1; i <= 5; ++i) {
       cerr << "game " << i << " as white";
-      Position pos;
-      while (!pos.isEndGame()) {
-        Move move;
-        if (pos.turns & 1) {
-          move = best.getBestMove(pos);
-        } else {
-          move = curr.getBestMove(pos);
-        }
-        pos.doMove(move);
-      }
-      if (pos.turns & 1) {
+      bool whiteWins = runGame(curr, best);
+      if (white) {
         cerr << "=> candidate wins" << endl;
         ++a;
       } else {
