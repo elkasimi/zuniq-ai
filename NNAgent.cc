@@ -26,7 +26,7 @@ NNAgent::~NNAgent() { fann_destroy(ann); }
 void NNAgent::save(const string &filename) { fann_save(ann, filename.c_str()); }
 
 void NNAgent::train(const string &filename) {
-  fann_train_on_file(ann, filename.c_str(), 1000, 100, 0.000001f);
+  fann_train_on_file(ann, filename.c_str(), 500, 100, 0.000001f);
 }
 
 void NNAgent::selfPlay(list<Example> &examples) {

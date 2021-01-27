@@ -1,18 +1,20 @@
 #include <floatfann.h>
+#include <thread>
+#include <future>
 
 #include "Common.h"
 #include "NNAgent.h"
 
-// TODO: use threading
+using namespace std;
 
 bool runGame(NNAgent x, NNAgent y) {
   Position pos;
   while (!pos.isEndGame()) {
     Move move;
     if (pos.turns & 1) {
-      move = curr.getBestMove(pos);
+      move = y.getBestMove(pos);
     } else {
-      move = best.getBestMove(pos);
+      move = x.getBestMove(pos);
     }
     pos.doMove(move);
   }
@@ -24,10 +26,16 @@ struct Coaching {
   Coaching(const string &filename) : curr(filename), best(curr) {}
 
   double pit() {
+    constexpr int gamesPerColor = 10;
     int a = 0, b = 0;
-    for (int i = 1; i <= 5; ++i) {
+    future<bool> results[gamesPerColor];
+    for (int i = 0; i < gamesPerColor; ++i) {
+      results[i] = async(runGame, best, curr);
+    }
+
+    for (int i = 0; i < gamesPerColor; ++i) {
       cerr << "game " << i << " as black";
-      bool whiteWins = runGame(best, curr);
+      bool whiteWins = results[i].get();
       if (whiteWins) {
         cerr << "=> best so far wins" << endl;
         ++b;
@@ -37,10 +45,14 @@ struct Coaching {
       }
     }
 
-    for (int i = 1; i <= 5; ++i) {
+    for (int i = 0; i < gamesPerColor; ++i) {
+      results[i] = async(runGame, curr, best);
+    }
+
+    for (int i = 0; i < gamesPerColor; ++i) {
       cerr << "game " << i << " as white";
-      bool whiteWins = runGame(curr, best);
-      if (white) {
+      bool whiteWins = results[i].get();
+      if (whiteWins) {
         cerr << "=> candidate wins" << endl;
         ++a;
       } else {
@@ -53,12 +65,26 @@ struct Coaching {
   }
 
   void train(int iteration) {
-    for (int e = 1; e <= 10; ++e) {
+    constexpr int episodesCount = 10;
+    future<list<Example>> results[episodesCount];
+    for (int e = 0; e < episodesCount; ++e) {
+      results[e] = async([this]() {
+        list<Example> episodeExamples;
+        auto master = best;
+        master.selfPlay(episodeExamples);
+        return episodeExamples;
+      });
+    }
+    for (int e = 0; e < episodesCount; ++e) {
       cout << "episode " << e << " ..";
       cout.flush();
-      best.selfPlay(examples);
+      auto episodeExamples = results[e].get();
+      for (const auto& example : episodeExamples) {
+        examples.push_back(example);
+      }
       cout << "done!" << endl;
     }
+
     cout << "training with " << examples.size() << " examples .." << endl;
     createTrainData();
     curr.train("data.train");
