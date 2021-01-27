@@ -3,6 +3,7 @@
 #include "Common.h"
 #include "NNAgent.h"
 
+// TODO add threading
 struct Coaching {
   Coaching() : curr(), best(curr) {}
   Coaching(const string &filename) : curr(filename), best(curr) {}

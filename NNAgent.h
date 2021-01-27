@@ -10,55 +10,31 @@ struct Example {
   float value;
 };
 
-
-// TODO review code
-// TODO add solver support
 struct ActionInfo {
-  ActionInfo() : status(INVALID) {}
+  ActionInfo() {}
 
   Stats q;
-  unsigned int status;
   float p;
+  bool valid = false;
 
-  operator bool() const { return status != INVALID; }
-  bool isWinning() const { return status == WIN; }
-  bool isLosing() const { return status == LOSS; }
-  void markWinning() { status = WIN; }
-  void markLosing() { status = LOSS; }
+  operator bool() const { return valid; }
 };
 
 struct StateInfo {
-  StateInfo() : status(UNKNOWN), actionsCount(0), visits(0) {}
+  StateInfo() : actionsCount(0), visits(0) {}
 
   ActionInfo actionInfo[60];
   Bitmask invalid;
-  unsigned int status : 2;
-  unsigned int winningAction : 6;
-  unsigned int actionsCount : 6;
-  unsigned int visits : 18;
-
-  bool isWinning() const { return status == WIN; }
-  bool isLosing() const { return status == LOSS; }
-  void markWinning(int a) {
-    status = WIN;
-    winningAction = a;
-    actionInfo[a].markWinning();
-  }
-  void markLosing(int a) { actionInfo[a].markLosing(); }
-  void markLosing() { status = LOSS; }
+  int actionsCount;
+  int visits;
 
   float eval(int a) const {
-    const auto &[q, status, p] = actionInfo[a];
-    if (status == WIN) return OO;
-    if (status == LOSS) return -OO;
+    const auto &[q, p, valid] = actionInfo[a];
+    assert(valid);
     return q.value + p * sqrtf(visits) / (1.0f + q.visits);
   }
 
   int select() const {
-    if (isWinning()) {
-      return winningAction;
-    }
-
     int best = -1;
     float bestValue = numeric_limits<float>::lowest();
     for (int a = 0; a < 60; ++a) {
@@ -118,28 +94,9 @@ struct NNAgent {
   void selfPlay(list<Example> &examples);
   void save(const string &filename);
   float estimate(State state);
-
-  void clean(const Position &pos) {
-    cerr << "ri=" << m.size() << " ";
-    for (auto it = m.begin(); it != m.end();) {
-      const auto &state = it->first;
-      const auto &invalid = it->second.invalid;
-      auto diff = pos.state & (~state);
-      if ((diff & invalid) != diff) {
-        it = m.erase(it);
-      } else {
-        ++it;
-      }
-    }
-    cerr << "rf=" << m.size() << endl;
-    m.reserve(maxIterations);
-  }
-
   bool contains(State s) { return m.find(s) != m.end(); }
 
   fann *ann;
   robin_hood::unordered_map<State, StateInfo> m;
-
-  static constexpr int maxIterations = 1000;
   static RNG gen;
 };
