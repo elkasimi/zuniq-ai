@@ -147,7 +147,9 @@ Of course you will need CMake building tool and a C++ compiler for that
 
 ## *Alphazero approach* try
 The game was a good candidate for an alphazero
+
 -- TODO add some alphazero introduction
+
 -- TODO add description of what was done for that
 
 ## *Could be done*
