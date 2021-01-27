@@ -24,28 +24,23 @@ for more information:
 
 ## *AI description*
 
-I used Monte Carlo Tree Search (MCTS-RAVE) as the basic algorithm to find the best
-move to play. Rapid Action Value Estimation (RAVE) was used to give the algorithm information
-about the promising branches to explore in the Tree.
+I used Monte Carlo Tree Search (MCTS) as the basic algorithm to find the best
+move to play. Rapid Action Value Estimation (RAVE) was used to give the algorithm information about the promising branches to explore in the Tree[1].
 
-I used a variant of RAVE that takes into consideration the opponent moves too and it does bring
-better results in practice, at least in Zuniq game. This can be justified by the fact that there is no black or white pieces
-but just placed walls because Zuniq is an impartial game.
+I used a variant of RAVE that takes into consideration the opponent moves too and it does bring better results in practice, at least in Zuniq game. This can be justified by the fact that there is no black or white pieces but just placed walls because Zuniq is an impartial game.
 
 [What is an impartial game?](https://en.wikipedia.org/wiki/Impartial_game)
 
-a variant of MCTS-Solver was used to improve endgame playing. the main change is to do a full search when moves count drops to a threshold(=5 in my program) and backpropagate the exact values to states to mark them as winning/losing states.
+a variant of MCTS-Solver[2] was used to improve endgame playing. the main change is to do a full search when moves count drops to a threshold(=5 in my program) and backpropagate the exact values to states to mark them as winning/losing states.
 
 ## *Position representation and conventions*
 Position contains the following information:
 - placed: represent the walls placed by the players
 - possibleWalls: represent the walls which are empty and not in a closed state
-- state: represent only the placed walls that are not inside a closed zone and this is what is used
-  as a state value in MCTS
+- state: represent only the placed walls that are not inside a closed zone and this is what is used as a state value in MCTS
 - possibleSizes: represent the possible sizes. at first it contains all value from 0 through 25. every time a zone is closed its size is removed from the list.
 
-all the above are 64 bits unsigned integers so adding a wall is an or with a flag and removing walls is an
-and with a complement.
+all the above are 64 bits unsigned integers so adding a wall is an `OR` with a flag and removing walls is an `AND` with `a complement`.
 
 I refactored this into some methods that can find in "Common.h" header.
 
@@ -78,19 +73,16 @@ so for every action in a state there are 3 values:
 an exploration bonus was added for each action that depends on its impact on reducing the possible moves.
 So finally the selection algorithm is trying to select action a that maximize this quantity:
 
-value = (n1 * v1 + n2 * v2 + n3 * v3) / (n1 + n2 + n3) +
-
-impact * sqrt(visits) / n (1)
+value = (n1 * v1 + n2 * v2 + n3 * v3) / (n1 + n2 + n3) + impact * sqrt(visits) / n (1)
 
 where
   Qi = (vi, ni), i = 1, 2, 3
   
   n = n1 + n2 + n3
   
-  impact = count of possible moves before playing action ai -
-  count of possible moves after playing action ai
+  impact = count of possible moves before playing action ai - count of possible moves after playing action ai
 
-I found that RAVE-MAX is more stable so I used formula (1) but with
+I found that RAVE-MAX[3] is more stable so I used formula (1) but with
 
 v2 = max(v2, v1)
 
@@ -153,16 +145,12 @@ make
 Of course you will need CMake building tool and a C++ compiler for that
 
 ## *Alphazero approach* try
-The game was a good candidate for an alphazero try
+The game was a good candidate for an alphazero
 -- TODO add some alphazero introduction
 -- TODO add description of what was done for that
 
 ## *Could be done*
 -- TODO
-
-## *Is there a mobile version for it*?
-Not yet. If you think it will be good create one please create an issue and if there are many people interested
-I can make one exposing AI to a UI. Feel free to use the sources for creating a UI if you think you can do it.
 
 ## References
 [1] Monte-Carlo Tree Search and Rapid Action Value Estimation in Computer Go by Sylvain Gelly and David Silver
