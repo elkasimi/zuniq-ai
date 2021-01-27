@@ -83,7 +83,7 @@ struct Coaching {
     std::sample(examples.begin(), examples.end(), std::back_inserter(sample),
                 2500, std::mt19937{std::random_device{}()});
 
-    auto train_data = fann_create_train(4 * sample.size(), 60, 1);
+    auto train_data = fann_create_train(8 * sample.size(), 60, 1);
     auto i = 0u;
     for (const auto &[state, result] : sample) {
       for (const auto s : getAllTransformations(state)) {
