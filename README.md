@@ -65,7 +65,7 @@ There are 30 horizontal wall and 30 vertical one. I encoded them like:
 
 ## *Enhancements*
 The Tree was saved in a map and kept between game moves.
-the map associates a state (unsigned integer of 32 bits) to a StateInfo struct which provides the following:
+the map associates a state (unsigned integer of 64 bits) to a StateInfo struct which provides the following:
   - an array of ActionInfo that stores information about actions in this state
   - state status which can be WIN, LOSS or UNKNOWN for unresloved yet states
   - winning action which makes sense only if it is a winning state
@@ -156,7 +156,7 @@ Or, to do some benchmarks:
 Or, to check the randomness of random move generation:  
 `./player --check-randomness`  
 
-Or, to generate opening book:
+Or, to generate opening book:  
 `./player --opening-0`  
 `./player --opening-1`  
 `./player --opening-2`  
