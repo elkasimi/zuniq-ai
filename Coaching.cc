@@ -29,42 +29,39 @@ struct Coaching {
 
   // TODO: verify that the games are differents!!
   double pit() {
-    constexpr int gamesPerColor = 10;
-    int a = 0, b = 0;
-    future<bool> results[gamesPerColor];
-    for (int i = 0; i < gamesPerColor; ++i) {
-      results[i] = async(runGame, best, curr);
+    constexpr int gamesCount = 20;
+    int wins = 0;
+    future<bool> results[gamesCount];
+    for (int i = 0; i < gamesCount; ++i) {
+      results[i] =
+          (i & 1) ? async(runGame, best, curr) : async(runGame, curr, best);
     }
 
-    for (int i = 0; i < gamesPerColor; ++i) {
-      cerr << "game " << i << " as black";
+    for (int i = 0; i < gamesCount; ++i) {
+      cerr << "game " << i;
+      if (i & 1)
+        cout << " as black=>";
+      else
+        cout << " as white=>";
       bool whiteWins = results[i].get();
       if (whiteWins) {
-        cerr << "=> best so far wins" << endl;
-        ++b;
+        if (i & 1)
+          cerr << "candidate lost" << endl;
+        else {
+          ++wins;
+          cerr << "candidate wins" << endl;
+        }
       } else {
-        cerr << "=> candidate wins" << endl;
-        ++a;
+        if (!(i & 1))
+          cerr << "candidate lost" << endl;
+        else {
+          ++wins;
+          cerr << "candidate wins" << endl;
+        }
       }
     }
 
-    for (int i = 0; i < gamesPerColor; ++i) {
-      results[i] = async(runGame, curr, best);
-    }
-
-    for (int i = 0; i < gamesPerColor; ++i) {
-      cerr << "game " << i << " as white";
-      bool whiteWins = results[i].get();
-      if (whiteWins) {
-        cerr << "=> candidate wins" << endl;
-        ++a;
-      } else {
-        cerr << "=> best so far wins" << endl;
-        ++b;
-      }
-    }
-
-    return static_cast<double>(a) / static_cast<double>(a + b);
+    return static_cast<double>(wins) / static_cast<double>(gamesCount);
   }
 
   void train(int iteration) {
@@ -141,7 +138,7 @@ struct Coaching {
 int main(int argc, char *argv[]) {
   auto coaching = argc > 1 ? Coaching(argv[1]) : Coaching();
 
-  for (int i = 0; i < 1000; ++i) {
+  for (int i = 1; i <= 1000; ++i) {
     cout << "iteration=" << i << endl;
     coaching.train(i);
   }

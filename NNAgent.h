@@ -98,4 +98,5 @@ struct NNAgent {
   fann *ann;
   unordered_map<State, StateInfo> m;
   static RNG gen;
+  int turn0;
 };

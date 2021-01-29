@@ -49,6 +49,7 @@ void NNAgent::selfPlay(list<Example> &examples) {
 
 Move NNAgent::getBestMove(const Position &pos) {
   m.clear();
+  turn0 = pos.turns;
 
   constexpr int maxIterations = 400;
   for (int i = 0; i < maxIterations; ++i) {
@@ -135,7 +136,9 @@ StateInfo &NNAgent::newNode(const Position &pos) {
   for (const Move &move : pos) {
     info.actionsCount++;
     auto nextState = pos.getStateAfterPlaying(move);
-    info.actionInfo[move.wall].p = -estimate(nextState);
+    float p = -estimate(nextState) +
+              (pos.turns == turn0 ? 0.01f * gen.lessThan(11) : 0.0f);
+    info.actionInfo[move.wall].p = p;
     info.actionInfo[move.wall].valid = true;
   }
   return info;
@@ -143,6 +146,7 @@ StateInfo &NNAgent::newNode(const Position &pos) {
 
 Move NNAgent::getBestMoveForSelfPlay(const Position &pos) {
   m.clear();
+  turn0 = pos.turns;
 
   constexpr int maxIterations = 200;
   for (int i = 0; i < maxIterations; ++i) {
