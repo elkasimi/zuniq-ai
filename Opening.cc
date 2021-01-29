@@ -1,6 +1,5 @@
 #include "McRaveAgent.h"
 
-// TODO: re-generate opening book
 const robin_hood::unordered_map<State, int> openingBook{
     // turn=1
     {0x0000000000000000, 19},  //-0.192141

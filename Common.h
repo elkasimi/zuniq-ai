@@ -8,10 +8,9 @@
 #include <iostream>
 #include <limits>
 #include <list>
-#include <optional>
 #include <random>
-#include <stack>
 #include <string>
+#include <unordered_map>
 #include <vector>
 
 using namespace std;

@@ -3,7 +3,6 @@
 #include "Common.h"
 #include "Position.h"
 #include "RNG.h"
-#include "robin_hood.h"
 
 struct Example {
   State state;
@@ -97,6 +96,6 @@ struct NNAgent {
   bool contains(State s) { return m.find(s) != m.end(); }
 
   fann *ann;
-  robin_hood::unordered_map<State, StateInfo> m;
+  unordered_map<State, StateInfo> m;
   static RNG gen;
 };

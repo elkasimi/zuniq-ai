@@ -1,6 +1,7 @@
 #include <floatfann.h>
 
 #include <future>
+#include <sstream>
 #include <thread>
 
 #include "Common.h"
@@ -26,6 +27,7 @@ struct Coaching {
   Coaching() : curr(), best(curr) {}
   Coaching(const string &filename) : curr(filename), best(curr) {}
 
+  // TODO: verify that the games are differents!!
   double pit() {
     constexpr int gamesPerColor = 10;
     int a = 0, b = 0;
@@ -76,6 +78,7 @@ struct Coaching {
         return episodeExamples;
       });
     }
+    // TODO: Check that games in self play are differents!!
     for (int e = 0; e < episodesCount; ++e) {
       cout << "episode " << e << " ..";
       cout.flush();
@@ -94,7 +97,9 @@ struct Coaching {
     if (winRate >= 0.6) {
       cerr << "A better agent found" << endl;
       best = curr;
-      best.save("best.ann");
+      ostringstream stream;
+      stream << "bests/" << iteration << ".ann";
+      best.save(stream.str());
     }
   }
 
@@ -134,7 +139,7 @@ struct Coaching {
 };
 
 int main(int argc, char *argv[]) {
-  auto coaching = argc > 1 ? Coaching("best.ann") : Coaching();
+  auto coaching = argc > 1 ? Coaching(argv[1]) : Coaching();
 
   for (int i = 0; i < 1000; ++i) {
     cout << "iteration=" << i << endl;
