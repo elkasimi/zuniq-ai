@@ -64,39 +64,42 @@ There are 30 horizontal wall and 30 vertical one. I encoded them like:
 - if wall index is in [30..59] then it is the vertical wall number (index-30). starting from left to right, up to buttom.
 
 ## *Enhancements*
-The Tree was saved in a map and kept between game moves.
+
+1 - The Tree was saved in a map and kept between game moves.
 the map associates a state (unsigned integer of 64 bits) to a StateInfo struct which provides the following:
   - an array of ActionInfo that stores information about actions in this state
   - state status which can be WIN, LOSS or UNKNOWN for unresloved yet states
   - winning action which makes sense only if it is a winning state
-- visits count of this state
+- visits count of this state  
 
-
-an extension for AMAF by considering also the value of an action when it is played by the opponent too.
+2 - an extension for AMAF by considering also the value of an action when it is played by the opponent too.
 so for every action in a state there are 3 values:
   1. Q1 the Monte Carlo stats
   2. Q2 the AMAF stats
   3. Q3 the (lets say Generalised AMAF) stats by considering also when either me or my opponent played this action in the sub tree.
 
-an exploration bonus was added for each action that depends on its impact on reducing the possible moves.
+3 - an exploration bonus was added for each action that depends on its impact on reducing the possible moves.
 So finally the selection algorithm is trying to select action a that maximize this quantity:
 
-value = (n1 * v1 + n2 * v2 + n3 * v3) / (n1 + n2 + n3) + impact * sqrt(visits) / n (1)
+`value = (n1 * v1 + n2 * v2 + n3 * v3) / (n1 + n2 + n3) + impact * sqrt(visits) / n` (1)
 
 where  
-  Qi = (vi, ni), i = 1, 2, 3  
-  n = n1 + n2 + n3  
-  impact = count of possible moves before playing action ai - count of possible moves after playing action ai
+  `Qi = (vi, ni), i = 1, 2, 3`  
+  `n = n1 + n2 + n3`  
+  `impact = count of possible moves before playing action ai - count of possible moves after playing action ai`
 
 I found that RAVE-MAX[3] is more stable so I used formula (1) but with  
-v2 = max(v2, v1)  
-v3 = max(v3, v1)  
+`v2 = max(v2, v1)`  
+`v3 = max(v3, v1)`  
 
-a generalised state representation was used. so whenever a position contains a closed zone all walls inside it are ignored in its representing state. The state does not care if black or white has to move. the states are expressed according to the player to move. this helped a lot to avoid many redundant computations when two positions differs just by a wall inside a closed zone.
+4 - a generalised state representation was used. so whenever a position contains a closed zone all walls inside it are ignored in its representing state. The state does not care if black or white has to move. the states are expressed according to the player to move. this helped a lot to avoid many redundant computations when two positions differs just by a wall inside a closed zone.
 
-findZone(wall) was the most expensive function so I tried to avoid it in random move generation. a random possible wall is choosen and if its zone is valid pick it otherwise pick randomly another possible wall..etc
+5 - `findZone(wall)` was the most expensive function so I tried to avoid it in random move generation. a random possible wall is choosen and if its zone is valid pick it otherwise pick randomly another possible wall..etc
 
-Following Alekhine, Alexander(World chess champion) quote: "The goal of an opening, is to have a playable game" I was not looking for the extremely best move to play but rather a good one.
+6 - Following Alekhine, Alexander(World chess champion) quote:
+> The goal of an opening, is to have a playable game  
+
+I was not looking for the extremely best move to play but rather a good one.
 
 So, for opening phase (turn < 21) I compiled a list of good walls for each player with some statistics of top bots games in the last competition results. during opening just those good moves are considered for me. this had the effect of reducing the branching factor at by sqrt(2) at least.
 
@@ -106,11 +109,13 @@ Those are the good opening moves found for white:
 and those are the good opening moves found for black:  
 ![good-black-opening-walls](./good-black-opening-walls.png)
 
-for tricking opponents the selection phase is done with epsilon-greedy approach for opponent so 10% of the time opponent moves are chosen at random so my player is playing moves that propose more pitfalls for opponent.
+7 - for tricking opponents the selection phase is done with epsilon-greedy approach for opponent so 10% of the time opponent moves are chosen at random so my player is playing moves that propose more pitfalls for opponent.
 
-for the endgame I used an MCTS-solver approach so whenever search reached terminal positions I propagate the exact values to mark parent states winning/losing accordingly.
+8 - for the endgame I used an MCTS-solver approach so whenever search reached terminal positions I propagate the exact values to mark parent states winning/losing accordingly.
 
-I enhanced my endgame calculation by doing a full search for positions where the moves count drops to 5 instead of random simulations for better information for (6)
+9 - I enhanced my endgame calculation by doing a full search for positions where the moves count drops to 5 instead of random simulations for better information for (8) enhancement.
+
+10 - after expansion of a new node several playouts(samples) are run for more robust results and for better selection. I used a samples count of 10. which helped in having a tradeoff between the tree depth and quality of actions statistics.
 
 ## *Time management*
 I used for the turns less than 19, 2 seconds in addition of 0.25 seconds to check if the most visited action correspond to the best, and do more iterations untill they match.
@@ -126,7 +131,7 @@ There are 8 symmetries in Zuniq board so for opening I pick a random symmetry to
 I used hashmap implementaion based on robin hood algorithm which gives better performance in comparison with std::unordered_map. It is nice that it is provided as header only so it is easy to integrate in my submission for CodeCup competition.
 
 for more information:  
-[robin-hood-hashing](https://github.com/martinus/robin-hood-hashing/blob/master/src/include/robin_hood.h)
+[Robin hood hashing](https://github.com/martinus/robin-hood-hashing/blob/master/src/include/robin_hood.h)
 
 ## *Building the player*
 
@@ -165,7 +170,7 @@ Or, to generate opening book:
 for generating entries to populate opening book hashmap for turns=1,2..5  
 
 ## *Alphazero approach* try
-The game was a good candidate for an alphazero try. as its state is simply encode in a 64 unsigned integer and the possible actions are as simple as integers in the range [0..59]. the algorithm used in alphazero is elegant and I encourage you to read the paper for it in references section.
+The game was a good candidate for an alphazero try. as its state can be easily encoded in a 64 unsigned integer and the possible actions are as simple as integers in the range [0..59]. the algorithm used in alphazero is elegant and I encourage to read the corresponding paper in references section.
 
 I tried to insipre from it the following approach:
 - the MCTS uses an artificial neural net to attribute a score for a position instead of the random playout
@@ -175,12 +180,19 @@ The coaching or learning is done like this:
 start with an agent with neural network with random weigths as the teacher  
 start with the student as the teacher itself  
 for i = 1 .. maxIterations  
-    . do self play with teacher and collect examples  
-    . train student with a sample of collected examples so far  
-    . run a competition between student and teacher  
-    . if student wins with a ratio >= 60% it becomes the teacher  
+  - do self play with teacher and collect examples  
+  - train student with a sample of collected examples so far  
+  - run a competition between student and teacher  
+  - if student wins with a ratio >= 60% it becomes the teacher  
 
--- TODO add some results
+### *Results against player1*
+-- TODO
+
+### *Results against player2*
+-- TODO
+
+### *Results against player3*
+-- TODO
 
 ## *Could be done*
 - exploit symmetries in opening moves generation
