@@ -186,20 +186,15 @@ for i = 1 .. maxIterations
   - do self play with teacher and collect examples  
   - train student with a sample of collected examples so far  
   - run a competition between student and teacher  
-  - if student wins with a ratio >= 60% it becomes the teacher  
+  - if student wins with a ratio >= 55% it becomes the teacher  
 
 ### *Results against player1*
--- TODO
-
-### *Results against player2*
--- TODO
-
-### *Results against player3*
--- TODO
+After 10 iterations a competition against CodeCup player1 gives:
 
 ## *Could be done*
 - exploit symmetries in opening moves generation
 - use Spark data processing engine to speadup AlphaZero approach  
+- try different architectures for the artificial neural network
 
 ***
 

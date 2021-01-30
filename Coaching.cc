@@ -1,5 +1,6 @@
 #include <floatfann.h>
 
+#include <fstream>
 #include <future>
 #include <sstream>
 #include <thread>
@@ -25,7 +26,26 @@ bool runGame(NNAgent x, NNAgent y) {
 
 struct Coaching {
   Coaching() : curr(), best(curr) {}
-  Coaching(const string &filename) : curr(filename), best(curr) {}
+
+  void init() {
+    best = NNAgent("data/best.ann");
+    curr = best;
+    ifstream in("data/examples.txt");
+    for (Example example; in >> example;) {
+      examples.push_back(example);
+    }
+    cout << "Started from previous data" << endl;
+    cout << "With " << examples.size() << " example." << endl;
+  }
+
+  void saveData() {
+    best.save("data/best.ann");
+    ofstream out("data/examples.txt");
+    for (const auto &example : examples) {
+      out << example << endl;
+    }
+    out.close();
+  }
 
   // TODO: verify that the games are differents!!
   double pit() {
@@ -87,20 +107,20 @@ struct Coaching {
     }
 
     cout << "training with " << examples.size() << " examples .." << endl;
-    createTrainData();
-    curr.train("data.train");
+    auto train_data = createTrainData();
+    curr.train(train_data);
     auto winRate = pit();
     cerr << "winRate=" << 100 * winRate << "%" << endl;
-    if (winRate >= 0.6) {
+    if (winRate >= 0.55) {
       cerr << "A better agent found" << endl;
       best = curr;
       ostringstream stream;
-      stream << "bests/" << iteration << ".ann";
+      stream << "data/" << iteration << ".ann";
       best.save(stream.str());
     }
   }
 
-  void createTrainData() {
+  fann_train_data *createTrainData() {
     while (examples.size() > 25000) {
       examples.pop_front();
     }
@@ -126,8 +146,7 @@ struct Coaching {
     }
 
     fann_shuffle_train_data(train_data);
-    fann_save_train(train_data, "data.train");
-    fann_destroy_train(train_data);
+    return train_data;
   }
 
   NNAgent curr;
@@ -136,12 +155,30 @@ struct Coaching {
 };
 
 int main(int argc, char *argv[]) {
-  auto coaching = argc > 1 ? Coaching(argv[1]) : Coaching();
+  Coaching coaching;
+  if (argc > 1 && string(argv[1]) == "--continue") {
+    coaching.init();
+  }
 
-  for (int i = 1; i <= 1000; ++i) {
+  int maxIterations;
+  cout << "Please give max iterations:" << endl;
+  cin >> maxIterations;
+  for (int i = 1; i <= maxIterations; ++i) {
     cout << "iteration=" << i << endl;
     coaching.train(i);
+    if (i % 10 == 0) coaching.saveData();
   }
+
+  cout << "A sample game of slef play with best one" << endl;
+  cout << "moves=";
+  NNAgent agent("data/best.ann");
+  Position pos;
+  while (!pos.isEndGame()) {
+    auto move = agent.getBestMoveForSelfPlay(pos);
+    pos.doMove(move);
+    cout << "'" << showWall(move.wall) << "', ";
+  }
+  cout << endl;
 
   return 0;
 }

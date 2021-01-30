@@ -9,6 +9,16 @@ struct Example {
   float value;
 };
 
+inline istream &operator>>(istream &in, Example &example) {
+  in >> example.state >> example.value;
+  return in;
+}
+
+inline ostream &operator<<(ostream &out, const Example &example) {
+  out << example.state << " " << example.value;
+  return out;
+}
+
 struct ActionInfo {
   ActionInfo() {}
 
@@ -70,6 +80,7 @@ struct StateInfo {
 using Transition = tuple<State, int, int>;
 
 struct fann;
+struct fann_train_data;
 struct NNAgent {
   NNAgent();
   NNAgent(const NNAgent &other);
@@ -89,7 +100,7 @@ struct NNAgent {
   Move getBestMove(const Position &pos);
   Move getBestMoveForSelfPlay(const Position &pos);
 
-  void train(const string &filename);
+  void train(fann_train_data *train_data);
   void selfPlay(list<Example> &examples);
   void save(const string &filename);
   float estimate(State state);

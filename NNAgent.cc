@@ -7,6 +7,7 @@ RNG NNAgent::gen;
 NNAgent::NNAgent(const NNAgent &other) { ann = fann_copy(other.ann); }
 
 NNAgent &NNAgent::operator=(const NNAgent &other) {
+  fann_destroy(ann);
   ann = fann_copy(other.ann);
   return *this;
 }
@@ -25,8 +26,9 @@ NNAgent::~NNAgent() { fann_destroy(ann); }
 
 void NNAgent::save(const string &filename) { fann_save(ann, filename.c_str()); }
 
-void NNAgent::train(const string &filename) {
-  fann_train_on_file(ann, filename.c_str(), 500, 100, 0.000001f);
+void NNAgent::train(fann_train_data *train_data) {
+  fann_train_on_data(ann, train_data, 100, 10, 0.000001f);
+  fann_destroy_train(train_data);
 }
 
 void NNAgent::selfPlay(list<Example> &examples) {
@@ -34,12 +36,12 @@ void NNAgent::selfPlay(list<Example> &examples) {
   Position pos;
   while (!pos.isEndGame()) {
     auto move = getBestMoveForSelfPlay(pos);
-    states.emplace_back(pos.turns & 1, pos.state);
     pos.doMove(move);
+    states.emplace_back(pos.turns & 1, pos.state);
   }
 
   int winner = 1 - (pos.turns & 1);
-  for (const auto [player, state] : states) {
+  for (const auto &[player, state] : states) {
     float result = player == winner ? 1.0f : -1.0f;
 
     Example e{state, result};
