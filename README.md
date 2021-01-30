@@ -188,8 +188,12 @@ for i = 1 .. maxIterations
   - run a competition between student and teacher  
   - if student wins with a ratio >= 55% it becomes the teacher  
 
+-- TODO
+## *How to compile*?
+## *How to start learning*?
+## *How to resume learning*?
+## *How to run a competition against zeroplayer*?
 ### *Results against player1*
-After 10 iterations a competition against CodeCup player1 gives:
 
 ## *Could be done*
 - exploit symmetries in opening moves generation
