@@ -152,8 +152,8 @@ make player
 
 Of course you will need CMake build tool and a C++ compiler for that
 
-You can use the program to analyze a given position with:
-./player --debug move1 move2 ... moveN
+You can use the program to analyze a given position with:  
+`./player --debug move1 move2 ... moveN`
 
 Or, to do some benchmarks:  
 - to benchmark playout phase in MCTS  
@@ -173,7 +173,7 @@ Or, to generate opening book:
 for generating entries to populate opening book hashmap for turns=1,2..5  
 
 ## *Alphazero approach* try
-The game was a good candidate for an alphazero try. as its state can be easily encoded in a 64 unsigned integer and the possible actions are as simple as integers in the range [0..59]. the algorithm used in alphazero is elegant and I encourage to read the corresponding paper in references section.
+The game was a good candidate for an alphazero try. as its state can be easily encoded in a 64 unsigned integer and the possible actions are as simple as integers in the range [0..59]. the algorithm used in alphazero is elegant and I encourage reading the corresponding paper in references section.
 
 I tried to insipre from it the following approach:
 - the MCTS uses an artificial neural net to attribute a score for a position instead of the random playout
