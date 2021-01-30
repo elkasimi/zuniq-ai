@@ -103,10 +103,13 @@ I was not looking for the extremely best move to play but rather a good one.
 
 So, for opening phase (turn < 21) I compiled a list of good walls for each player with some statistics of top bots games in the last competition results. during opening just those good moves are considered for me. this had the effect of reducing the branching factor at by sqrt(2) at least.
 
-Those are the good opening moves found for white:  
+Those are the good opening moves found for white: 
+
+
 ![good-white-opening-walls](./good-white-opening-walls.png)
 
 and those are the good opening moves found for black:  
+
 ![good-black-opening-walls](./good-black-opening-walls.png)
 
 7 - for tricking opponents the selection phase is done with epsilon-greedy approach for opponent so 10% of the time opponent moves are chosen at random so my player is playing moves that propose more pitfalls for opponent.
