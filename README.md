@@ -196,7 +196,9 @@ for i = 1 .. maxIterations
 
 ## *Could be done*
 - exploit symmetries in opening moves generation
-- use Spark data processing engine to speadup AlphaZero approach
+- use Spark data processing engine to speadup AlphaZero approach  
+
+***
 
 ## References
 [1] “Monte-Carlo Tree Search and Rapid Action Value Estimation in Computer Go“ by Sylvain Gelly and David Silver
