@@ -1,10 +1,10 @@
 ![missing image](end-game-41.png)  
-This is my entry winning CodeCup competition 2021 with the game zuniq.
+This is my entry winning [CodeCup](https://www.codecup.nl/intro.php) competition 2021 with the game zuniq.
 for detailed ranking:  
 [Zuniq-ranking](https://www.codecup.nl/competition.php?comp=264#ranking)
 
 ## *What is Codecup?*
-CodeCup is an online programming competition inviting programmers to write a piece of software able to play a specific board game between two players (or several players like [CodeCup 2017](https://archive.codecup.nl/2017/39/rules_less.html)).
+[CodeCup](https://www.codecup.nl/intro.php) is an online programming competition inviting programmers to write a piece of software able to play a specific board game between two players (or several players like [CodeCup 2017](https://archive.codecup.nl/2017/39/rules_less.html)).
 
 Anybody can participate; there are no age restrictions or other special requirements. The CodeCup never charges entry fees.
 
@@ -14,14 +14,14 @@ after that the final and the official competition is played.
 # *What is Zuniq game?*
 You start on an empty grid of 6 x 6. You and your opponent place alternatively walls in the grid. You may close in zones, but these zones must all have a different size. It is forbidden to place walls in closed zones. The goal that you place the last wall and that you, consequently, win with 100 points against 50.
 
-game "Zuniq" was created by Marcos Donnantuoni. It has very few elements and yet an unexpected complexity making it a good subject for AI programming enthousiasts.
+game "Zuniq" was created by [Marcos Donnantuoni](https://marcosd.itch.io/). It has very few elements and yet an unexpected complexity making it a good subject for AI programming enthousiasts.
 
 for more information:  
 [Zuniq rules](https://www.codecup.nl/zuniq/rules.php)
 
 ## *AI description*
 
-I used Monte Carlo Tree Search (MCTS) as the basic algorithm to find the best move to play. Rapid Action Value Estimation (RAVE) was used to give the algorithm information about the promising branches to explore in the Tree[1].
+I used [Monte Carlo Tree Search (MCTS)](https://en.wikipedia.org/wiki/Monte_Carlo_tree_search) as the basic algorithm to find the best move to play. Rapid Action Value Estimation (RAVE) was used to give the algorithm information about the promising branches to explore in the Tree[1].
 
 ### *What is MCTS?*
 In computer science, Monte Carlo tree search (MCTS) is a heuristic search algorithm for some kinds of decision processes, most notably those employed in software that plays board games. In that context MCTS is used to solve the game tree.
