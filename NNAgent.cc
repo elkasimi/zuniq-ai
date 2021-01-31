@@ -15,7 +15,7 @@ NNAgent &NNAgent::operator=(const NNAgent &other) {
 NNAgent::NNAgent() {
   ann = fann_create_standard(4, 60, 40, 20, 1);
   fann_set_activation_function_hidden(ann, FANN_SIGMOID_SYMMETRIC);
-  fann_set_activation_function_output(ann, FANN_SIGMOID);
+  fann_set_activation_function_output(ann, FANN_SIGMOID_SYMMETRIC);
 }
 
 NNAgent::NNAgent(const string &filename) {

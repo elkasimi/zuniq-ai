@@ -188,17 +188,65 @@ for i = 1 .. maxIterations
   - run a competition between student and teacher  
   - if student wins with a ratio >= 55% it becomes the teacher  
 
--- TODO
 ## *How to compile*?
+Get libfann and install it:
+[Fast Artificial Neural Network Library](https://github.com/libfann/fann)  
+```
+cd build
+make coaching
+```
 ## *How to start learning*?
+```
+mkdir data
+./coaching
+```
 ## *How to resume learning*?
+```
+./coaching --continue
+```
+
 ## *How to run a competition against zeroplayer*?
+get caia  
+[Download caia](https://www.codecup.nl/download_caia.php)  
+
+Build zeroplayer  
+```
+make zeroplayer
+```
+copy zeroplayer and data/best.ann into ~/caia/zuniq/bin (or make simlinks there to them)  
+```
+cd ~/caia/zuniq/bin
+./competition.sh zeroplayer opponent
+```
 ### *Results against player1*
+After 10 iterations:  
+```
+  7750  zeroplayer
+  7250  player1
+```
+
+After 100 iterations:
+```
+  7900  zeroplayer
+  7100  player1
+```
+
+After 1000 iterations:
+```
+  7800  zeroplayer                      
+  7200  player1
+```
+
+winRate=56%
+
+winRate against player2 was low ~ 2% even after 1000 iterations. Maybe neural net achitecture needs to be reviewed or need to include previous states too to give it more context. Or maybe more iterations are needed..etc
+I think I will try this later.
 
 ## *Could be done*
 - exploit symmetries in opening moves generation
 - use Spark data processing engine to speadup AlphaZero approach  
 - try different architectures for the artificial neural network
+- include previous states too to give the artificial neural network more context as it input
 
 ***
 
