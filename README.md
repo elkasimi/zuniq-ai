@@ -177,7 +177,7 @@ for generating entries to populate opening book hashmap for turns=1,2..5
 ## *Alphazero approach* try
 The game was a good candidate for an alphazero try. as its state can be easily encoded in a 64 unsigned integer and the possible actions are as simple as integers in the range [0..59]. the algorithm used in alphazero is elegant and I encourage reading the corresponding paper in references section.
 
-I tried to insipre from it the following approach:
+I tried to inspire from it the following approach:
 - the MCTS uses an artificial neural net to attribute a score for a position instead of the random playout
 - the same neural network is used to attribute a value for actions in states
 
