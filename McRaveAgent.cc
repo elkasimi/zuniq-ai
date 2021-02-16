@@ -17,7 +17,7 @@ void McRaveAgent::simulate(const Position &pos) {
     if (winningAction == -1) {
       result.value = tmpPos.turns & 1 ? OO : -OO;
     } else {
-      result.add(tmpPos.state, winningAction);
+      result.add(&m[tmpPos.state], winningAction);
       result.value = tmpPos.turns & 1 ? -OO : OO;
     }
   } else {
@@ -96,7 +96,7 @@ int McRaveAgent::simulateTree(Position &pos, IterationResult &result,
       pos.getRandomMove(gen, move);
       auto action = move.wall;
       pos.doMove(move);
-      result.add(state, action);
+      result.add(&newState, action);
       return newState.actionsCount;
     }
     return lastState ? lastState->actionsCount : 60;
@@ -111,7 +111,7 @@ int McRaveAgent::simulateTree(Position &pos, IterationResult &result,
   auto &actionInfo = stateInfo.actionInfo[move.wall];
   auto action = move.wall;
   pos.doMove(move);
-  result.add(state, action);
+  result.add(&stateInfo, action);
   return simulateTree(pos, result, &stateInfo, &actionInfo);
 }
 
@@ -145,22 +145,21 @@ void McRaveAgent::backup(const IterationResult &result) {
     if (stats) relevantActions[relevantActionsCount++] = a;
   }
   for (int t = T - 1; t >= 0; --t) {
-    auto [st, at] = result.transitions[t];
-    auto &qs = m[st];
+    auto [state, at] = result.transitions[t];
     bool black = t & 1 ? !result.firstStateBlack : result.firstStateBlack;
     float v = black ? -value : value;
     if (isExactWin(v)) {
-      qs.markWinning(at);
+      state->markWinning(at);
       continue;
     }
     if (isExactLoss(v)) {
-      qs.markLosing(at);
-      bool loss = all_of(qs.actionInfo, qs.actionInfo + 60,
+      state->markLosing(at);
+      bool loss = all_of(state->actionInfo, state->actionInfo + 60,
                          [](const ActionInfo &info) -> bool {
                            return !info || info.isLosing();
                          });
       if (loss) {
-        qs.markLosing();
+        state->markLosing();
         continue;
       } else {
         value /= OO;
@@ -168,20 +167,20 @@ void McRaveAgent::backup(const IterationResult &result) {
       }
     }
 
-    qs.updateQ1(at, v, samples);
+    state->updateQ1(at, v, samples);
 
     bool samePlayer = true;
     for (int u = t; u < T; ++u) {
       int au = result.transitions[u].second;
-      qs.updateQ3(au, v, samples);
-      if (samePlayer) qs.updateQ2(au, v, samples);
+      state->updateQ3(au, v, samples);
+      if (samePlayer) state->updateQ2(au, v, samples);
       samePlayer = !samePlayer;
     }
 
     for (int i = 0; i < relevantActionsCount; ++i) {
       int a = relevantActions[i];
       const auto &amafStats = result.amafStats[a];
-      auto &actionInfo = qs.actionInfo[a];
+      auto &actionInfo = state->actionInfo[a];
       if (black) {
         actionInfo.q2 -= amafStats.black;
         actionInfo.q3 -= amafStats.any;

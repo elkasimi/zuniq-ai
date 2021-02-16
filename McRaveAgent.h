@@ -139,13 +139,13 @@ struct AMAFStats {
 };
 
 struct IterationResult {
-  pair<State, Action> transitions[60];
+  pair<StateInfo *, Action> transitions[60];
   float value;
   bool firstStateBlack;
   int countTransitions = 0;
   AMAFStats amafStats[60];
 
-  void add(State s, Action a) {
+  void add(StateInfo *s, Action a) {
     assert(countTransitions < 60);
     transitions[countTransitions++] = {s, a};
   }
